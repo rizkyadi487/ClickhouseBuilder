@@ -589,3 +589,5 @@ You can use both `servers` and `clusters` config directives and choose on which 
 query should be executed via `onCluster` and `using` methods. If you want to choose
 server outside cluster, you should just call `onCluster(null)` and then call `using` method. You can
 call `usingRandomServer` and `using` methods with selected cluster or not.
+
+- Forked
