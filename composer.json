@@ -9,6 +9,10 @@
     {
       "name": "Evsign",
       "email": "evsign.alex@gmail.com"
+    },
+    {
+      "name": "Rizky Adi",
+      "email": "rizkyadi487@gmail.com"
     }
   ],
   "autoload": {
@@ -30,7 +34,7 @@
   "require": {
     "php": "~7.1",
     "myclabs/php-enum": "^1.5",
-    "rizkyadi487/clickhouse-php-client": "~2.0.0"
+    "rizkyadi487/clickhouse-php-client": "~2.0.1"
   },
   "require-dev": {
     "illuminate/database": "5.*",
