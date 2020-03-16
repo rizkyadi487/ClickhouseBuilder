@@ -3,6 +3,7 @@
 namespace Tinderbox\ClickhouseBuilder\Integrations\Laravel;
 
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Traits\Macroable;
 use Tinderbox\Clickhouse\Common\Format;
 use Tinderbox\Clickhouse\Query;
@@ -190,20 +191,25 @@ class Builder extends BaseBuilder
      * @throws \Tinderbox\Clickhouse\Exceptions\ClientException
      * @return LengthAwarePaginator
      */
-    public function paginate(int $page = 1, int $perPage = 15): LengthAwarePaginator
+    public function paginate($perPage = 15, $columns = ['*'], $pageName = 'page', $page = null): LengthAwarePaginator
     {
-        $count = $this->getConnection()
+        $page = $page ?: Paginator::resolveCurrentPage($pageName);
+
+        $count = (int)$this->getConnection()
             ->table($this->cloneWithout(['columns' => []])
             ->select(new Expression('1')))
             ->count();
 
         $results = $this->limit($perPage, $perPage * ($page - 1))->get();
-
+        $results = json_decode(json_encode($results));
         return new LengthAwarePaginator(
             $results,
             $count,
             $perPage,
-            $page
+            $page,[
+            'path' => Paginator::resolveCurrentPath(),
+            'pageName' => $pageName,
+        ]
         );
     }
 
