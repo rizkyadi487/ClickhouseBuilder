@@ -3,6 +3,7 @@
 namespace Tinderbox\ClickhouseBuilder\Integrations\Laravel;
 
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Container\Container;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Traits\Macroable;
 use Tinderbox\Clickhouse\Common\Format;
@@ -211,6 +212,43 @@ class Builder extends BaseBuilder
             'pageName' => $pageName,
         ]
         );
+    }
+
+    public function skip($value)
+    {
+        return $this->offset($value);
+    }
+
+    public function offset($value)
+    {
+        $property = $this->unions ? 'unionOffset' : 'offset';
+
+        $this->$property = max(0, $value);
+
+        return $this;
+    }
+
+    protected function simplePaginator($items, $perPage, $currentPage, $options)
+    {
+        $items = json_decode(json_encode($items), FALSE);
+        return Container::getInstance()->makeWith(Paginator::class, compact(
+            'items', 'perPage', 'currentPage', 'options'
+        ));
+    }
+
+    public function simplePaginate($perPage = 15, $columns = ['*'], $pageName = 'page', $page = null)
+    {
+        $page = $page ?: Paginator::resolveCurrentPage($pageName);
+
+        $this->skip(($page - 1) * $perPage)->take($perPage + 1);
+
+        return $this->simplePaginator(
+            $this->get($columns), 
+            $perPage, 
+            $page, [
+            'path' => Paginator::resolveCurrentPath(),
+            'pageName' => $pageName,
+        ]);
     }
 
     /**
