@@ -240,7 +240,7 @@ class Builder extends BaseBuilder
     {
         $page = $page ?: Paginator::resolveCurrentPage($pageName);
 
-        $this->skip(($page - 1) * $perPage)->take($perPage + 1);
+        $this->take($perPage + 1, $perPage * ($page - 1));
 
         return $this->simplePaginator(
             $this->get($columns), 
